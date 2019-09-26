@@ -49,8 +49,6 @@ public class Matriks {
 				this.matriks[i][j] = Double.parseDouble(temp[i][j-1]);
 			}
 		}	
-		System.out.println("selesai");
-		printMatriks();
 	}
 
 	public void readMatriksFromFile() throws IOException {
@@ -120,26 +118,10 @@ public class Matriks {
 		}
 	}
 
-	private void rowReducerForInverse(double[][] matrix, double[][] identity, int i, int j) {
+	private Boolean rowReducerForInverse(double[][] matrix, double[][] identity, int i, int j) {
 		int start=1;
 		int r = matrix.length;
 		int column = matrix[0].length;
-
-		System.out.println("\nbefore: matrix");
-		for (int a=1; a< r; a++) {
-			for (int b=1; b< column; b++) {
-				System.out.print(matrix[a][b] + " ");
-			}
-			System.out.println();
-		}
-
-		System.out.println("\nbefore: identity");
-		for (int a=1; a< r; a++) {
-			for (int b=1; b< column; b++) {
-				System.out.print(identity[a][b] + " ");
-			}
-			System.out.println();
-		}
 
 		for (int p=start; p < r; p++) {
 			double temp = matrix[p][j];
@@ -152,23 +134,10 @@ public class Matriks {
 				}
 			}
 		}
-
-		System.out.println("\nafter: matrix");
-		for (int a=1; a< r; a++) {
-			for (int b=1; b< column; b++) {
-				System.out.print(matrix[a][b] + " ");
-			}
-			System.out.println();
+		if (isMatrixNotInvertible(matrix)) {
+			return false;
 		}
-
-		System.out.println("\nafter: identity");
-		for (int a=1; a< r; a++) {
-			for (int b=1; b< column; b++) {
-				System.out.print(identity[a][b] + " ");
-			}
-			System.out.println();
-		}
-
+		return true;
 
 	}
 
@@ -202,7 +171,7 @@ public class Matriks {
 		}
 	}
 
-	private void GaussJordanForInverse(double[][] matrix, double[][] identity) {
+	private Boolean GaussJordanForInverse(double[][] matrix, double[][] identity) {
 		int i=1;
 		int j=1;
 		int k;
@@ -228,11 +197,16 @@ public class Matriks {
          		}
 
          		// pengurang baris gauss
-         		rowReducerForInverse(matrix, identity, i,j);
+         		boolean is_invertible = rowReducerForInverse(matrix, identity, i,j);
+         		if (!is_invertible) {
+         			return false;
+         		}
          		i++;
          	}
          	j++;
 		}
+
+		return true;
 	}
 
 	public void findInverseUsingOBE() {
@@ -245,19 +219,12 @@ public class Matriks {
 				
 			}
 		}
-		for (int i=1; i<=this.row; i++) {
-			for (int j=1; j<=this.col; j++) {
-				System.out.print(identity[i][j] + " ");
-			}
-			System.out.println();
-		}
+		
 		double[][] inverse = identity;
 
-		GaussJordanForInverse(this.matriks, inverse);
-
-		printMatriks();
+		boolean is_invertible = GaussJordanForInverse(this.matriks, inverse);
 		
-		if (isMatrixEqual(identity, inverse)) {
+		if (is_invertible) {
 			System.out.println("Matrix is invertible");
 			System.out.println("Hasil inverse");
 			for (int i=1; i<= this.row; i++) {
@@ -267,9 +234,7 @@ public class Matriks {
 				System.out.println();
 			}
  		} else {
- 			if (isMatrixNotInvertible(inverse)) {
- 				System.out.println("Matrix is not invertible");
- 			}
+ 			System.out.println("Matrix is not invertible");
  		}
 
 	}
