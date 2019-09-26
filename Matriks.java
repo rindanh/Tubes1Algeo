@@ -5,7 +5,7 @@ public class Matriks {
 	private static Scanner scan = new Scanner(System.in);
 	private static int ADD_ROW = 1;
 	private static int ADD_COL = 2;
-	public static double [][] matriks;
+	private static double [][] matriks;
 	private boolean is_augmented;
 	private int row;	// m
 	private int col;	// n
@@ -42,7 +42,6 @@ public class Matriks {
 		String [][] temp = new String[row][column];
 
 		for (int i=1; i< row; i++) {
-			System.out.println(i);
 			r = scan.nextLine();
 			temp[i] = r.trim().split("\\s+");
 			for (int j=1; j<column; j++) {
@@ -98,7 +97,6 @@ public class Matriks {
 	}
 
 	private void rowReducer(double[][] matrix, int i, int j, boolean is_gaussjordan) {
-		System.out.println("called");
 		int start;
 		if (is_gaussjordan) {
 			start = 1;
@@ -141,7 +139,7 @@ public class Matriks {
 
 	}
 
-	public void Gauss(double[][] matrix, boolean is_gaussjordan) {
+	private void Gauss(double[][] matrix, boolean is_gaussjordan) {
 		int i=1;
 		int j=1;
 		int k;
@@ -169,6 +167,141 @@ public class Matriks {
          	}
          	j++;
 		}
+	}
+
+	public void GaussSolution() throws IOException {
+		Gauss(this.matriks, false);
+		System.out.println("\nHasil operasi Gauss dalam bentuk matriks");
+		printMatriks();
+		Gauss(this.matriks, true);
+		System.out.println();
+		SPLSolution();
+	}
+
+	public void GaussJordanSolution() throws IOException {
+		Gauss(this.matriks, true);
+		System.out.println("\nHasil operasi Gauss-Jordan dalam bentuk matriks");
+		printMatriks();	
+		System.out.println();
+		SPLSolution();
+	}
+
+	private void SPLSolution() throws IOException {
+		String solution = "";
+		if (isNoSolution()) {
+			solution = "Solusi SPL tidak ada";
+			System.out.println("Solusi SPL tidak ada");
+		} else 
+		if (isSolutionUnique()) {
+			solution = "Solusi SPL Unik\n" + calculateUniqueSolution();
+			System.out.println(solution);
+
+		} else 
+		if (isSolutionInfinite()) {
+			solution = "Solusi SPL Infinite";
+			System.out.println("Solusi SPL Infinite");
+			// calculateInfiniteSolution();
+		}
+		saveToFile(solution);
+	}
+
+	private String calculateUniqueSolution() {
+		String solution = "";
+		for (int i=1; i<= this.row; i++) {
+			solution += "x";
+			solution += Integer.toString(i);
+			solution += " = ";
+			solution += Double.toString(this.matriks[i][this.col + 1]);
+			solution += "\n";
+		}
+		return solution;
+	}
+
+	private void calculateInfiniteSolution() {
+		for (int i=1; i<=this.row; i++) {
+			for (int j=1; j<=this.col; j++) {
+				if (this.matriks[i][j] == 1) {
+					System.out.print("x");
+					System.out.print(j);
+					System.out.print("= ");
+					System.out.print(matriks[i][this.col + 1]);
+
+					for (int p=j+1; p<=this.col; p++) {
+						if (this.matriks[i][p] != 0) {
+							double coeff = this.matriks[i][p] * -1;
+							if (coeff > 0) {
+								System.out.print('+');
+								System.out.print(coeff);
+							} else 
+							if (this.matriks[i][p] < 0) {
+								System.out.print(coeff);
+							}
+							System.out.print("t");
+							System.out.print(p);
+							// p++;
+						}
+					}
+				} else 
+				if (this.matriks[i][j]!=0 && this.matriks[i][j]!=1) {
+					System.out.println();
+					System.out.print("x");
+					System.out.print(j);
+					System.out.print("= ");
+					System.out.print("t");
+					System.out.println(j);
+				}
+			}
+		}
+	}
+
+	private void calculateInfiniteSolution1() {
+		char[] list_of_char = {'a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','y','z'};
+		int idxchar = 0;
+		String solution;
+		String[] list_of_solution = new String[this.col + 1];
+		Boolean[] list_sol = new Boolean[this.col + 1];
+		
+		for (int j = 1; j<=this.col; j++) {
+			list_sol[j] = false;
+		}
+
+		for (int i = 1; i<=this.row; i++) {
+			for (int j=1; j<=this.col; j++) {
+				if (this.matriks[i][j] == 1) {
+					list_sol[j] = true;
+					j = this.col;
+				}
+			}
+		}
+
+		for (int j = 1; j<=this.col; j++) {
+			if (!list_sol[j]) {
+				list_of_solution[j] = Character.toString(list_of_char[idxchar]);
+				idxchar++;
+			}
+		}
+
+		// for (int kol=1; kol<=this.col; kol++) {
+		// 	if (list_sol[kol]) {
+		// 		solution = 
+		// 	}
+		// }
+
+
+		for (int j = 1; j<=this.col; j++) {
+			System.out.println(list_of_solution[j]);
+		}
+
+
+	}
+
+	private Boolean isRowAllZero(double[] rowMatrix) {
+		for (int i=1; i<=this.col+1; i++) {
+			if (rowMatrix[i]!=0) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 	private Boolean GaussJordanForInverse(double[][] matrix, double[][] identity) {
@@ -219,7 +352,7 @@ public class Matriks {
 				
 			}
 		}
-		
+
 		double[][] inverse = identity;
 
 		boolean is_invertible = GaussJordanForInverse(this.matriks, inverse);
@@ -274,6 +407,37 @@ public class Matriks {
 			}
 		}
 		return true;
+	}
+
+	private Boolean isSolutionUnique() {
+		if (this.matriks[this.row][this.col] == 1 && this.matriks[this.row][this.col + 1] != 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private Boolean isSolutionInfinite() {
+		if (this.matriks[this.row][this.col] == 0 && this.matriks[this.row][this.col + 1] == 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private Boolean isNoSolution() {
+		if (this.matriks[this.row][this.col] == 0 && this.matriks[this.row][this.col + 1] != 0) {
+			return true;
+		}
+		return false;
+	}
+
+	private void saveToFile(String solution) throws IOException {
+		System.out.println("Masukkan nama output file (xxx.txt):");
+		System.out.print(">> ");
+		
+		String outfile = scan.nextLine();
+		PrintWriter out = new PrintWriter(new FileWriter(outfile));
+		out.print(solution);
+		out.close();
 	}
 
 	public static void main(String[] args) throws IOException {
