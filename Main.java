@@ -1,14 +1,15 @@
 import java.util.Scanner;
+import java.io.*;
 
 public class Main{
 	private static Scanner scan = new Scanner(System.in);
 	private static Matriks matrix;
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException {
 		Main main = new Main();
 		main.start();
 	}
 
-	private void start() {
+	private void start() throws IOException {
 		System.out.println("=======================================================================");
 		System.out.println("==         				  	    WELCOME								 ==");
 		System.out.println("=======================================================================");
@@ -18,7 +19,7 @@ public class Main{
 		} while (!mainMenu());
 	}
 
-	private Boolean mainMenu() {
+	private Boolean mainMenu() throws IOException {
 		System.out.println("\nMENU");
 		System.out.println("1. Sistem Persamaan Linier");
 		System.out.println("2. Determinan");
@@ -46,7 +47,7 @@ public class Main{
 		}
 	}
 
-	private Boolean subMenuSPL() {
+	private Boolean subMenuSPL() throws IOException {
 		System.out.println("\nPilih Metode");
 		System.out.println("1. Metode Eliminasi Gauss");
 		System.out.println("2. Metode Eliminasi Gauss-Jordan");
@@ -63,7 +64,7 @@ public class Main{
 		return false;
 	}
 
-	private void selectInputType() {
+	private void selectInputType() throws IOException {
 		System.out.println("\nPilih media input matriks");
 		System.out.println("1. Keyboard");
 		System.out.println("2. File eksternal");
@@ -71,7 +72,16 @@ public class Main{
 		int option = scan.nextInt(); 
 		if (option == 1) {
 			inputMatrixFromKeyboard();
+		} else 
+		if (option==2) {
+			inputMatrixFromFile();
 		}
+	}
+
+	private void inputMatrixFromFile() throws IOException {
+		matrix = new Matriks();
+		matrix.readMatriksFromFile();
+		matrix.printMatriks();
 	}
 
 	private void inputMatrixFromKeyboard() {
@@ -81,7 +91,6 @@ public class Main{
 		int col = scan.nextInt(); 
 
 		matrix = new Matriks(row, col);
-		System.out.println("hiya");
 		matrix.readMatriksFromKeyboard();
 	}
 
