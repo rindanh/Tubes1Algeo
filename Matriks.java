@@ -84,8 +84,14 @@ public class Matriks {
 		this.matriks[i][j] = 1;
 	}
 
-	private void rowReducer(int i, int j) {
-		for (int p=i; p < this.row + ADD_ROW; p++) {
+	private void rowReducer(int i, int j, boolean is_gaussjordan) {
+		int start;
+		if (is_gaussjordan) {
+			start = 1;
+		} else {
+			start = i;
+		}
+		for (int p=start; p < this.row + ADD_ROW; p++) {
 			if (p != i && this.matriks[p][j] != 0) {
 				for (int q=j+1; q < this.col + ADD_COL; q++) {
 					this.matriks[p][q] -= this.matriks[p][j] * this.matriks[i][q];
@@ -95,8 +101,7 @@ public class Matriks {
 		}
 	}
 
-	public void Gauss() {
-		System.out.println("mulai");
+	public void Gauss(boolean is_gaussjordan) {
 		int i=1;
 		int j=1;
 		int k;
@@ -120,7 +125,7 @@ public class Matriks {
          		}
 
          		// pengurang baris gauss
-         		rowReducer(i,j);
+         		rowReducer(i,j,is_gaussjordan);
          		i++;
          	}
          	j++;
@@ -128,6 +133,7 @@ public class Matriks {
 	}
 
 	public void printMatriks() {
+		System.out.println();
 		for (int i=1; i< this.row + ADD_ROW; i++) {
 			for (int j=1; j< this.col + ADD_COL; j++) {
 				System.out.print(this.matriks[i][j] + " ");

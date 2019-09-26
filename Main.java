@@ -58,9 +58,11 @@ public class Main{
 		selectInputType();
 
 		if (option == 1) {
-			matrix.Gauss();
-			matrix.printMatriks();
+			matrix.Gauss(false);
+		} else if (option == 2) {
+			matrix.Gauss(true);
 		}
+		matrix.printMatriks();
 		return false;
 	}
 
