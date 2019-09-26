@@ -55,25 +55,25 @@ public class Main{
 		System.out.println("4. Kaidah Cramer");
 		System.out.print(">> ");
 		int option = scan.nextInt(); 
-		selectInputType();
+		selectInputType(true);
 
 		if (option == 1) {
-			matrix.Gauss(false);
+			matrix.Gauss(matrix.matriks, false);
 		} else if (option == 2) {
-			matrix.Gauss(true);
+			matrix.Gauss(matrix.matriks, true);
 		}
 		matrix.printMatriks();
 		return false;
 	}
 
-	private void selectInputType() throws IOException {
+	private void selectInputType(boolean is_augmented) throws IOException {
 		System.out.println("\nPilih media input matriks");
 		System.out.println("1. Keyboard");
 		System.out.println("2. File eksternal");
 		System.out.print(">> ");
 		int option = scan.nextInt(); 
 		if (option == 1) {
-			inputMatrixFromKeyboard();
+			inputMatrixFromKeyboard(is_augmented);
 		} else 
 		if (option==2) {
 			inputMatrixFromFile();
@@ -86,13 +86,21 @@ public class Main{
 		matrix.printMatriks();
 	}
 
-	private void inputMatrixFromKeyboard() {
-		System.out.print("Masukkan nilai m (jumlah baris) >> ");
-		int row = scan.nextInt(); 
-		System.out.print("Masukkan nilai n (jumlah kolom) >> ");
-		int col = scan.nextInt(); 
+	private void inputMatrixFromKeyboard(boolean is_augmented) {
+		int col, row;
+		if (is_augmented) {
+			System.out.print("Masukkan nilai m (jumlah baris) >> ");
+			row = scan.nextInt(); 
+			System.out.print("Masukkan nilai n (jumlah kolom) >> ");
+			col = scan.nextInt(); 
+		} else {
+			System.out.print("Masukkan nilai n (jumlah baris dan kolom) >> ");
+			col = scan.nextInt(); 
+			row = col;
+		}
+		
 
-		matrix = new Matriks(row, col);
+		matrix = new Matriks(row, col, is_augmented);
 		matrix.readMatriksFromKeyboard();
 	}
 
@@ -108,12 +116,20 @@ public class Main{
 		return false;
 	}
 
-	private Boolean subMenuInvers() {
+	private Boolean subMenuInvers() throws IOException {
 		System.out.println("\nPilih Metode");
 		System.out.println("1. Metode Eliminasi Gauss-Jordan");
 		System.out.println("2. Menggunakan Matriks Adjoin");
 		System.out.print(">> ");
 		int option = scan.nextInt(); 
+		selectInputType(false);
+		if (option==1) {
+			inverseGaussJordan();
+		}
 		return false;
+	}
+
+	private void inverseGaussJordan() {
+		matrix.findInverseUsingOBE();
 	}
 }
