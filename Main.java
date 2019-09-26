@@ -2,6 +2,7 @@ import java.util.Scanner;
 
 public class Main{
 	private static Scanner scan = new Scanner(System.in);
+	private static Matriks matrix;
 	public static void main(String[] args) {
 		Main main = new Main();
 		main.start();
@@ -53,17 +54,46 @@ public class Main{
 		System.out.println("4. Kaidah Cramer");
 		System.out.print(">> ");
 		int option = scan.nextInt(); 
+		selectInputType();
+
+		if (option == 1) {
+			matrix.Gauss();
+			matrix.printMatriks();
+		}
 		return false;
 	}
 
-	private Boolean subMenuDet() {
-		System.out.println("\nPilih Metode");
-		System.out.println("1. Metode Eliminasi Gauss");
-		System.out.println("2. Metode Eliminasi Gauss-Jordan");
-		System.out.println("3. Metode Matriks Balikan");
-		System.out.println("4. Kaidah Cramer");
+	private void selectInputType() {
+		System.out.println("\nPilih media input matriks");
+		System.out.println("1. Keyboard");
+		System.out.println("2. File eksternal");
 		System.out.print(">> ");
 		int option = scan.nextInt(); 
+		if (option == 1) {
+			inputMatrixFromKeyboard();
+		}
+	}
+
+	private void inputMatrixFromKeyboard() {
+		System.out.print("Masukkan nilai m (jumlah baris) >> ");
+		int row = scan.nextInt(); 
+		System.out.print("Masukkan nilai n (jumlah kolom) >> ");
+		int col = scan.nextInt(); 
+
+		matrix = new Matriks(row, col);
+		System.out.println("hiya");
+		matrix.readMatriksFromKeyboard();
+	}
+
+	private Boolean subMenuDet() {
+		// System.out.println("\nPilih Metode");
+		// System.out.println("1. Metode Eliminasi Gauss");
+		// System.out.println("2. Metode Eliminasi Gauss-Jordan");
+		// System.out.println("3. Metode Matriks Balikan");
+		// System.out.println("4. Kaidah Cramer");
+		// System.out.print(">> ");
+		// int option = scan.nextInt(); 
+		System.out.println("Maaf belum bisa");
 		return false;
 	}
 

@@ -24,15 +24,19 @@ public class Matriks {
 	}
 
 	public void readMatriksFromKeyboard() {
-		String r = scan.nextLine();
+		System.out.println("masok");
+		String r;
 		String [][] temp = new String[this.row + ADD_ROW][this.col + ADD_COL];
 		for (int i=1; i< this.row + ADD_ROW; i++) {
+			System.out.println(i);
 			r = scan.nextLine();
 			temp[i] = r.trim().split("\\s+");
 			for (int j=1; j<this.col + ADD_COL; j++) {
 				this.matriks[i][j] = Double.parseDouble(temp[i][j-1]);
 			}
 		}	
+		System.out.println("selesai");
+		printMatriks();
 	}
 
 	public void readMatriksFromFile() throws IOException {
@@ -64,6 +68,65 @@ public class Matriks {
 		in.close();
 	}
 
+	private void swap2Rows(int i, int k, int j) {
+		double temp;
+		for (int q = j; q < this.col + ADD_COL; q++){
+			temp = this.matriks[i][q];
+			this.matriks[i][q] = this.matriks[k][q];
+			this.matriks[k][q] = temp;
+     	}
+	}
+
+	private void rowDivider(int i, int j) {
+		for (int q = j+1; q < this.col + ADD_COL; q++) {
+			this.matriks[i][q] /= this.matriks[i][j];
+		}
+		this.matriks[i][j] = 1;
+	}
+
+	private void rowReducer(int i, int j) {
+		for (int p=i; p < this.row + ADD_ROW; p++) {
+			if (p != i && this.matriks[p][j] != 0) {
+				for (int q=j+1; q < this.col + ADD_COL; q++) {
+					this.matriks[p][q] -= this.matriks[p][j] * this.matriks[i][q];
+				}
+				this.matriks[p][j] = 0;
+			}
+		}
+	}
+
+	public void Gauss() {
+		System.out.println("mulai");
+		int i=1;
+		int j=1;
+		int k;
+
+		while (i<=this.row && j<=this.col) {
+
+			// look for a non-zero entry in col j or below row i
+			k = i;
+         	while (k <= this.row && this.matriks[k][j]==0) {
+         		k++;
+         	}
+
+         	// if non-zero entry is found
+         	if (k <= this.row) {
+         		if (k != i) {
+         			swap2Rows(i, k, j);
+         		}
+
+         		if (this.matriks[i][j] != 1) {
+         			rowDivider(i,j);
+         		}
+
+         		// pengurang baris gauss
+         		rowReducer(i,j);
+         		i++;
+         	}
+         	j++;
+		}
+	}
+
 	public void printMatriks() {
 		for (int i=1; i< this.row + ADD_ROW; i++) {
 			for (int j=1; j< this.col + ADD_COL; j++) {
@@ -84,8 +147,8 @@ public class Matriks {
 		// matrix.readMatriksFromKeyboard();
 
 		// input dari file
-		Matriks matrix = new Matriks();
-		matrix.readMatriksFromFile();
-		matrix.printMatriks();
+		// Matriks matrix = new Matriks();
+		// matrix.readMatriksFromFile();
+		// matrix.printMatriks();
 	}
 }
