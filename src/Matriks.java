@@ -79,6 +79,23 @@ public class Matriks {
 		in.close();
 	}
 
+	public Matriks kali(Matriks m) {
+		Matriks res = new Matriks(this.row, m.col, false);
+
+
+		for (int i = 0; i < this.row; i++) {
+			for (int j = 0; j < m.col; j++) {
+				double total = 0;
+				for (int k = 0; k < m.row; k++) {
+					total = total + (this.matriks[i][k] * m.matriks[k][j]);
+				}
+				res.matriks[i][j] = total;
+			}
+		}
+
+		return res;
+	}
+
 	private void swap2Rows(double[][] matrix, int i, int k, int j) {
 		double temp;
 		int column = matrix[0].length;
@@ -116,10 +133,48 @@ public class Matriks {
 		}
 	}
 
+	private void GaussForDet(boolean isSPL, boolean isGaussJordan) {
+		for(int n = 1; n <= this.row; ++n) {
+			double reducer = this.matriks[n][n];
+
+			if(reducer == 0) {
+				int notZeroRow = 0;
+				
+				for(int i = n + 1; i <= this.row; ++i) {
+					if(this.matriks[i][n] > 0) {
+						notZeroRow = i;
+						break;
+					}
+				}
+
+				for(int i = n; i <= this.col + 1; ++i) {
+					double swap = this.matriks[notZeroRow][i];
+					this.matriks[notZeroRow][i] = this.matriks[n][i];
+					if(!isSPL) {
+						this.matriks[notZeroRow][i] *= -1;
+					}
+					this.matriks[n][i] = swap;
+				}
+
+				reducer = this.matriks[n][n];
+			} 
+
+			for (int i = n + 1; i <= this.row; ++i) {
+				if (this.matriks[i][n] != 0) {
+					double diff = this.matriks[i][n] / reducer;
+
+					for (int j = n; j <= this.col + 1; ++j) {
+						this.matriks[i][j] -= (this.matriks[n][j] * diff);
+					}
+				}
+			}
+		}
+	}
+
 	private Boolean rowReducerForInverse(double[][] matrix, double[][] identity, int i, int j) {
 		int start=1;
-		int r = matrix.length;
-		int column = matrix[0].length;
+		int r = this.row;
+		int column = this.col + 1;
 
 		for (int p=start; p < r; p++) {
 			double temp = matrix[p][j];
@@ -132,6 +187,7 @@ public class Matriks {
 				}
 			}
 		}
+
 		if (isMatrixNotInvertible(matrix)) {
 			return false;
 		}
@@ -169,40 +225,81 @@ public class Matriks {
 		}
 	}
 
-	public void GaussSolution() throws IOException {
-		Gauss(this.matriks, false);
-		System.out.println("\nHasil operasi Gauss dalam bentuk matriks");
-		printMatriks();
-		Gauss(this.matriks, true);
-		System.out.println();
-		SPLSolution();
-	}
-
-	public void GaussJordanSolution() throws IOException {
-		Gauss(this.matriks, true);
-		System.out.println("\nHasil operasi Gauss-Jordan dalam bentuk matriks");
-		printMatriks();	
-		System.out.println();
-		SPLSolution();
-	}
-
-	private void SPLSolution() throws IOException {
-		String solution = "";
-		if (isNoSolution()) {
-			solution = "Solusi SPL tidak ada";
-			System.out.println("Solusi SPL tidak ada");
-		} else 
-		if (isSolutionUnique()) {
-			solution = "Solusi SPL Unik\n" + calculateUniqueSolution();
-			System.out.println(solution);
-
-		} else 
-		if (isSolutionInfinite()) {
-			solution = "Solusi SPL Infinite";
-			System.out.println("Solusi SPL Infinite");
-			// calculateInfiniteSolution();
+	public void GaussSolution(boolean isDet, boolean isGaussJordan) throws IOException {
+		if(!isDet && isGaussJordan) {
+			Gauss(this.matriks, isGaussJordan);
+		} else {
+			GaussForDet(!isDet, isGaussJordan);
 		}
-		saveToFile(solution);
+
+		if (isGaussJordan) {
+			System.out.println("Hasil operasi Gauss-Jordan dalam bentuk matriks");
+		} else {
+			System.out.println("Hasil operasi Gauss dalam bentuk matriks");
+		}
+
+		printMatriks();
+		
+		if(!isDet) {
+			System.out.println();
+			SPLSolution(isGaussJordan);
+		}
+	}
+
+	public double getDetFromGauss(boolean isGaussJordan) {
+		double res = 1;
+
+		for(int i = 1; i <= this.row; ++i) 
+			res *= (this.matriks[i][i]);
+
+		if(isGaussJordan) {
+			return res * -1;
+		} else {
+			return res;
+		}
+	}
+
+	private void SPLSolution(boolean isGaussJordan) throws IOException {
+		if (!isGaussJordan) {
+			double [] result = new double[this.row + 1];
+
+			for(int i = this.row; i >= 1; --i) {
+				if(i < this.row) {
+					double temp = 0;
+
+					for(int j = this.col; j > i; --j) {
+						temp += this.matriks[i][j] * result[j];
+					}
+
+					this.matriks[i][this.col + 1] -= temp;
+				}
+
+				result[i] = this.matriks[i][this.col + 1] / this.matriks[i][i];
+			}
+
+			System.out.println("Solusi SPL:");
+
+			for(int i = 1; i < result.length; ++i)
+				System.out.println("x" + i + " = " + result[i]);
+
+		} else {
+			String solution = "";
+			if (isNoSolution()) {
+				solution = "Solusi SPL tidak ada";
+				System.out.println("Solusi SPL tidak ada");
+			} else 
+			if (isSolutionUnique()) {
+				solution = "Solusi SPL Unik\n" + calculateUniqueSolution();
+				System.out.println(solution);
+
+			} else 
+			if (isSolutionInfinite()) {
+				solution = "Solusi SPL Infinite";
+				System.out.println("Solusi SPL Infinite");
+				// calculateInfiniteSolution();
+			}
+			// saveToFile(solution);
+		}
 	}
 
 	private String calculateUniqueSolution() {
@@ -331,9 +428,9 @@ public class Matriks {
 
          		// pengurang baris gauss
          		boolean is_invertible = rowReducerForInverse(matrix, identity, i,j);
-         		if (!is_invertible) {
-         			return false;
-         		}
+         		// if (!is_invertible) {
+         		// 	return false;
+         		// }
          		i++;
          	}
          	j++;
@@ -371,6 +468,8 @@ public class Matriks {
  		}
 
 	}
+
+	
 
 	public void printMatriks() {
 		int row, column;
@@ -435,9 +534,50 @@ public class Matriks {
 		System.out.print(">> ");
 		
 		String outfile = scan.nextLine();
-		PrintWriter out = new PrintWriter(new FileWriter(outfile));
-		out.print(solution);
-		out.close();
+
+		if(!outfile.isEmpty()) {
+			PrintWriter out = new PrintWriter(new FileWriter(outfile));
+			out.print(solution);
+			out.close();
+		}
+	}
+
+	public double[][] kofaktor () throws IOException{
+		double [][] res = new double[this.row+1][this.row+1];
+		Matriks temp = new Matriks(this.row - 1, this.row - 2, false);
+
+		System.out.println(this.row + ", " + this.row);
+
+		for(int i = 1; i <= this.row; ++i) {
+			for (int j = 1; j <= this.row; ++j) {
+				int row = 1, col = 1;
+
+				for(int k = 1; k <= this.row; ++k) {
+					for (int l= 1; l <= this.row; ++l) {
+						if(k != i && l != j) {
+							temp.matriks[row][col] = this.matriks[k][l];
+							++col;
+						}
+
+					}
+					++row;
+					col = 1;
+				}
+
+				temp.printMatriks();
+
+				temp.GaussSolution(true, false);
+				double det = temp.getDetFromGauss(false);
+				if((i % 2 == 1 && j % 2 ==0) || (i % 2 == 0 && j % 2 == 1)) {
+					det *= -1;
+				}
+
+				System.out.println("det = " + det);
+				res[i][j] = det;
+			}
+		}
+
+		return res;
 	}
 
 	public static void main(String[] args) throws IOException {

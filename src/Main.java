@@ -11,7 +11,7 @@ public class Main{
 
 	private void start() throws IOException {
 		System.out.println("=======================================================================");
-		System.out.println("==         				  	    WELCOME								 ==");
+		System.out.println("==                             WELCOME                               ==");
 		System.out.println("=======================================================================");
 
 		do {
@@ -43,6 +43,8 @@ public class Main{
 		if (option == 3) {
 			return subMenuInvers();
 		} else {
+			System.out.println("Maaf, belum bisa");
+
 			return false;
 		}
 	}
@@ -58,9 +60,12 @@ public class Main{
 		selectInputType(true);
 
 		if (option == 1) {
-			matrix.GaussSolution();
+			matrix.GaussSolution(false, false);
 		} else if (option == 2) {
-			matrix.GaussJordanSolution();
+			matrix.GaussSolution(false, true);
+			// matrix.GaussJordanSolution();
+		} else {
+			System.out.println("Maaf, belum bisa");
 		}
 		return false;
 	}
@@ -80,15 +85,15 @@ public class Main{
 	}
 
 	private void inputMatrixFromFile(boolean is_augmented) throws IOException {
-		if (!is_augmented) {
-			System.out.println("Maaf belum bisa");
-		} else {
+		// if (!is_augmented) {
+		// 	System.out.println("Maaf belum bisa");
+		// } else {
 			matrix = new Matriks();
 			matrix.readMatriksFromFile();
 			System.out.println("Hasil baca matriks dari file");
 			matrix.printMatriks();
 			System.out.println();
-		}
+		// }
 		
 	}
 
@@ -110,15 +115,23 @@ public class Main{
 		matrix.readMatriksFromKeyboard();
 	}
 
-	private Boolean subMenuDet() {
-		// System.out.println("\nPilih Metode");
-		// System.out.println("1. Metode Eliminasi Gauss");
-		// System.out.println("2. Metode Eliminasi Gauss-Jordan");
-		// System.out.println("3. Metode Matriks Balikan");
-		// System.out.println("4. Kaidah Cramer");
-		// System.out.print(">> ");
-		// int option = scan.nextInt(); 
-		System.out.println("Maaf belum bisa");
+	private Boolean subMenuDet() throws IOException {
+		System.out.println("\nPilih Metode");
+		System.out.println("1. Metode Eliminasi Gauss");
+		System.out.println("2. Metode Eliminasi Gauss-Jordan");
+		System.out.print(">> ");
+		int option = scan.nextInt();
+		selectInputType(true);
+
+		if (option == 1) {
+			matrix.GaussSolution(true, false);
+			System.out.println("\nDeterminan matriks = " + matrix.getDetFromGauss(false));
+		} else if (option == 2) {
+			matrix.GaussSolution(true, true);
+			System.out.println("\nDeterminan matriks = " + matrix.getDetFromGauss(true));
+			// matrix.GaussJordanSolution();
+		}
+
 		return false;
 	}
 
@@ -131,6 +144,8 @@ public class Main{
 		selectInputType(false);
 		if (option==1) {
 			inverseGaussJordan();
+		} else {
+			System.out.println("Maaf, belum bisa");
 		}
 		return false;
 	}
